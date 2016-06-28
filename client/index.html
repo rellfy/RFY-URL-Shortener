@@ -1,0 +1,217 @@
+<html>
+	<head>
+		<title>RFY Shortener</title>
+		<link rel="icon" type="image/png" href="https://rellfy.com/fav.png" />
+		<link href='https://fonts.googleapis.com/css?family=Varela+Round' rel='stylesheet' type='text/css'>
+		<link href='https://fonts.googleapis.com/css?family=Dosis:400,200' rel='stylesheet' type='text/css'>
+		<style>
+			html, body{
+				margin: 0;
+				padding: 0;
+				background-color: #090909;
+				font-family: 'Varela Round', sans-serif;
+				color: rgba(255,255,255,0.85);
+				overflow: hidden;
+			}
+			#container{
+				width: 100%;
+				height: 100%;
+			}
+			#main{
+				width: 900px;
+				height: 480px;
+				position: absolute;
+				left: 50%;
+				top: 50%;
+				margin-left: -450px;
+				margin-top: -240px;
+			}
+			#main .title{
+				font-size: 62px;
+				text-align: center;
+				width: 100%;
+				height: 25%;
+				line-height: 120px;
+			}
+			#main .card{
+				width: 100%;
+				height: 75%;
+				background-color: rgba(75,150,210,0.35);
+				border-radius: 10px;
+				cursor: default;
+			}
+			#shorten-div{
+				width: 100%;
+				height: 25%;
+				margin-top: 25px;
+				display: inline-block;
+				background-color: rgba(0,0,0,0.9);
+			}
+			#card-type{
+				height: 15px;
+				width: 98%;
+				text-align: right;
+				line-height: 15px;
+				padding-top: 10px;
+				margin-right: 2%;
+				font-family: 'Dosis', sans-serif;
+				color: rgba(45,170,170,0.75);
+			}
+			#url{
+				width: 100%;
+				height: 100%;
+				border: 0;
+				outline: 0;
+				background-color: rgba(0,0,0,0);
+				color: rgba(255,255,255,0.75);
+				font-size: 38px;
+				padding-left: 25px;
+				padding-right: 25px;
+				font-family: 'Dosis', sans-serif;
+				text-align: center;
+			}
+			#number-div{
+				width: 100%;
+				height: 20%;
+				text-align: center;
+				font-size: 34px;
+				display: inline-block;
+				margin-top: 25px;
+				text-shadow: 2px 2px #131313;
+				visibility: hidden;
+			}
+			#valid-div{
+				width: 80%;
+				height: 15%;
+				margin-top: 5px;
+				display: inline-block;
+				padding-left: 10%;
+				padding-right: 10%;
+				text-shadow: 2px 2px #131313;
+			}
+			.valid-block{
+				height: 100%;
+				margin-top: 7px;
+				line-height: 20px;
+				display: inline-block;
+				vertical-align: top;
+			}
+			.valid-dates{
+				line-height: 54px;
+				font-size: 26px;
+				display: inline-block;
+				vertical-align: top;
+				margin-left: 15px;
+				margin-right: 25px;
+			}
+			#name-div{
+				width: 60%;
+				height: 15%;
+				margin-top: 5px;
+				display: inline-block;
+				padding-left: 10%;
+				padding-right: 10%;
+				line-height: 54px;
+				float: left;
+			}
+			#watermark-div{
+				float: right;
+				font-size: 30px;
+				color: rgba(0,0,0,0.25);
+				padding-right: 15px;
+				line-height: 54px;
+			}
+			span{
+				font-size: 14px;
+			}
+			#name{
+				width: 100%;
+				height: 100%;
+				background-color: rgba(0,0,0,0);
+				border: 0;
+				outline: 0;
+				font-size: 28px;
+				color: rgba(255,255,255,0.75);
+				text-shadow: 2px 2px #131313;
+			}
+		</style>
+	</head>
+	<body>
+		<div id="contaner">
+			<div id="main">
+				<div class="title">RFY URL Shortener</div>
+				<div class="card">
+					<div id="card-type">RELLFY.COM</div>
+					<div id="shorten-div">
+						<form id="shorten" autocomplete="off">
+							<input type="text" id="url" placeholder="URL" spellcheck="false">
+						</form>
+					</div>
+					<div id="number-div"></div>
+					<div id="valid-div">
+						<div class="valid-block">VALID<br>FROM</div><div class="valid-dates">06/16</div>
+						<div class="valid-block">UNTIL<br>END</div><div class="valid-dates">01/38</div>
+					</div>
+					<div id="name-div"><input type="text" id="name" value="MR ANONYMOUS" spellcheck="false"></div>
+					<div id="watermark-div">RFY CARD</div>
+				</div>
+			</div>
+		</div>
+		<script src="./lib/jquery.js"></script>
+		<script src="./lib/socketio.js"></script>
+		<script>
+
+			function setTotalLinks(id)
+			{
+				id = id.toString(); 
+				while (id.length < 16)
+				{
+					id = ['0', id.slice(0)].join('');
+				}
+				id = [id.slice(0, 4), ' ', id.slice(4)].join('');
+				id = [id.slice(0, 9), ' ', id.slice(9)].join('');
+				id = [id.slice(0, 14), ' ', id.slice(14)].join('');
+				$('#number-div').text(id);
+				$('#number-div').css('visibility','visible').hide().fadeIn(75);
+			}
+
+			$('#shorten').submit(function(){
+				socket.emit('shorten', $('#url').val());
+				$('#url').attr('placeholder', 'URL');
+				$('.card').animate({marginLeft:"1500px"}, 400);
+				return false;
+			});
+
+			var socket = io();
+
+			socket.emit('handshake');
+
+			socket.on('get_totalinks', function(total){
+				setTotalLinks(total);
+			});
+
+
+			socket.on('complete', function(data){
+				if (!data.err)
+				{
+					var hash = data.hash;
+					$('#url').val('http://rfy.nz/' + data.hash);
+					setTimeout(function(){
+						$('.card').css('margin-left', '-3000px');
+						$('.card').animate({marginLeft: '0px'}, 450);
+					}, 420);
+				}
+				else
+				{
+					$('#url').val('');
+					$('#url').attr('placeholder', data.err);
+					$('.card').css('margin-left', '-3000px');
+					setTimeout(function(){
+						$('.card').animate({marginLeft: '0px'}, 450);
+					}, 420);
+				}
+			});
+
+		</script>
+	</body>
+</html>
