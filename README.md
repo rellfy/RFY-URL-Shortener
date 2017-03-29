@@ -1,7 +1,7 @@
 # RFY-URL-Shortener
 Shorten URLs and analyze their traffic.
 
-This is a simple system for rapidly shortening URLs and retrieving the amount of clicks per url shortened.
+This is a simple system for rapidly shortening URLs and retrieving the amount of clicks per URL shortened.
 
 ## Technology
 
