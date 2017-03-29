@@ -1,0 +1,10 @@
+const config = {
+	db: {
+		host: 'example.com',
+		user: 'username',
+		password: 'userPass',
+		database: 'myDb'
+	}
+};
+
+module.exports = config;
