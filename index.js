@@ -42,7 +42,7 @@ app.get('/library/:fileName', (request, response) => {
 
 	fs.stat(path + request.url, (err, stats) => {
 		if (err) return response.sendFile(path + '/404.html');
-		
+
 		response.sendFile(path + request.url);
 	});
 });
@@ -60,17 +60,14 @@ app.get('*', (request, response) => {
 		}
 
 		db.query('SELECT link FROM links WHERE hash = ' + db.escape(hash) + ';', function(err, rows){
-			if (rows.length > 0) {
-				response.redirect(rows[0].link);
-				console.log("all ok -- now incrementing");
-				URL.incrementClicks(db, hash);
-			} else {
-				response.redirect('/');
-			}
-
 			const totalTime = new Date().getTime() - startTime;
 			console.log(prefix + 'Query took ' + (totalTime / 1000).toFixed(2) + 's (hash: ' + hash + ')');
 			connection.release();
+
+			if (rows.length < 1) return response.redirect('/');
+
+			response.redirect(rows[0].link);
+			URL.incrementClicks(db, hash);
 		});
 	})
 });
