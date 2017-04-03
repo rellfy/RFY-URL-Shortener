@@ -33,7 +33,6 @@ app.use((request, response, next) => {
 // Routes
 app.get('/', function (request, response){
 	response.sendFile(path + '/index.html');
-	var hostname = request.headers.host.split(":")[0];
 });
 
 app.get('/library/:fileName', (request, response) => {
@@ -41,11 +40,11 @@ app.get('/library/:fileName', (request, response) => {
 
 	if (request.params.fileName.includes('../')) return response.status(400).send('Invalid request');
 
-	try {
+	fs.stat(path + request.url, (err, stats) => {
+		if (err) return response.sendFile(path + '/404.html');
+		
 		response.sendFile(path + request.url);
-	} catch(e) {
-		response.sendFile(path + '/404.html');
-	}
+	});
 });
 
 app.get('*', (request, response) => {
