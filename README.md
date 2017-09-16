@@ -5,7 +5,7 @@ This is a simple system for rapidly shortening URLs and retrieving the amount of
 
 ## Technology
 
-This project uses MySQL for database, Express.js as the server framework and Socket.io for fast client-server communication.
+This project uses MySQL for database, Express.js as the server framework and Socket.io for ~~fast~~ client-server communication.
 
 ## How to
 
